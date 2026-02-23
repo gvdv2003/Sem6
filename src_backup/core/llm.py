@@ -39,3 +39,14 @@ def get_model():
         return _get_openrouter_model('google/gemini-3-flash-preview')
     else:
         raise ValueError(f"Invalid MODEL_PROVIDER: {MODEL_PROVIDER}. Must be 'openrouter' or 'local'")
+
+def get_triage_model():
+    """
+    Returns a cheap and fast model for triage classification.
+    """
+    if MODEL_PROVIDER == 'local':
+        return 'openai:qwen/custom-assistant-model'
+    elif MODEL_PROVIDER == 'openrouter':
+        return _get_openrouter_model('openai/gpt-oss-safeguard-20b')
+    else:
+        raise ValueError(f"Invalid MODEL_PROVIDER: {MODEL_PROVIDER}. Must be 'openrouter' or 'local'")

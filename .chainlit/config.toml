@@ -86,7 +86,7 @@ reaction_on_message_received = false
 
 [UI]
 # Name of the assistant.
-name = "RotterMaatje"
+name = "Piet Hein"
 
 # Set default language to English
 default_locale = "en-US"
