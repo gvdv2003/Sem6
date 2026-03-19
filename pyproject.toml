@@ -5,9 +5,11 @@ description = "A simple interactive AI chatbot."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "chainlit>=2.9.2",
+    "assistant-stream>=0.0.31",
     "openai>=2.8.1",
     "pydantic>=2.12.5",
-    "pydantic-ai>=1.24.0",
+    "pydantic-ai>=1.0.10",
+    "pydantic-ai-slim[ag-ui]>=1.0.10",
     "python-dotenv>=1.0.1",
+    "uvicorn>=0.41.0",
 ]

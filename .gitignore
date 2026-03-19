@@ -27,3 +27,9 @@ unsloth_compiled_cache/
 
 # Editor settings
 .vscode/
+
+# IDE agent
+.agent/
+
+# Backup
+src_backup/
