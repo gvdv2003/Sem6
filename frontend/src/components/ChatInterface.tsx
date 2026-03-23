@@ -10,7 +10,7 @@ interface Message {
 
 const SUGGESTED_PROMPTS = [
   'Vertel me over de zilvervloot.',
-  'Wie bent u?',
+  'Kan u mij iets vertellen over uzelf?',
   'Wat is uw mening over de Spanjaarden?',
 ];
 
@@ -169,7 +169,7 @@ export const ChatInterface: React.FC = () => {
                 </h1>
                 <p className="mt-4 max-w-md text-sm leading-7 text-white/55 lg:text-base">
                   Piet Hein
-                  was een Nederlandse luitenant-admiraal die wereldberoemd werd door in 1628 de Spaanse Zilvervloot te veroveren in de Baai van Matanzas. Hoewel hij vaak als zeeheld wordt geëerd in liederen, is er tegenwoordig ook meer aandacht voor zijn rol in de koloniale geschiedenis en de transatlantische slavenhandel.
+                  was een Nederlandse luitenant-admiraal die wereldberoemd werd door in 1628 de Spaanse Zilvervloot te veroveren in de Baai van Matanzas.
                 </p>
               </div>
             </div>
