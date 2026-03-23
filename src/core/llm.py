@@ -36,7 +36,7 @@ def get_model():
     if MODEL_PROVIDER == 'local':
         return 'openai:qwen/custom-assistant-model'
     elif MODEL_PROVIDER == 'openrouter':
-        model_id = os.getenv('OPENROUTER_MODEL', 'xiaomi/mimo-v2-flash')
+        model_id = os.getenv('OPENROUTER_MODEL', 'deepseek/deepseek-v3.2')
         return _get_openrouter_model(model_id)
     else:
         raise ValueError(f"Invalid MODEL_PROVIDER: {MODEL_PROVIDER}. Must be 'openrouter' or 'local'")
