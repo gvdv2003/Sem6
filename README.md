@@ -1,10 +1,11 @@
 # Hybride Wereld
 
-An interactive historical experience featuring Piet Hein, a 17th-century Dutch admiral, powered by Pydantic AI and served via a React frontend with a historical and 3D map.
+An interactive historical experience featuring iconic Dutch historical figures, powered by Pydantic AI and served via a React frontend with a historical and 3D map.
 
 ## Features
 
-- **Piet Hein Persona**: Converse with Piet Hein (1577-1629), Admiral of the West India Company (WIC). The agent responds in character, using Dutch and refusing to acknowledge technology beyond 1629.
+- **Historical Personas**: Converse with figures like Piet Hein (1577-1629) or Witte de WithWitte Corneliszoon de With (1599–1658). Agents respond in character, adhering to their era's knowledge, vocabulary, and convictions.
+- **Triage System**: Automated classification of user input to ensure accurate routing and context injection before interacting with historical characters.
 - **AG-UI Protocol**: Real-time streaming communication between the React frontend and the Pydantic AI backend over the [AG-UI](https://ai.pydantic.dev/ui/ag-ui) protocol.
 - **Historical Map Interface**: A Cesium-powered 3D map as the main entry point of the application.
 - **Switchable LLM Providers**: Use OpenRouter (cloud) or a local LLM via a configurable environment variable.
@@ -18,7 +19,8 @@ An interactive historical experience featuring Piet Hein, a 17th-century Dutch a
 | Python 3.12+ | Language |
 | [Pydantic AI](https://ai.pydantic.dev/) | Agent framework |
 | [Uvicorn](https://www.uvicorn.org/) | ASGI server |
-| OpenRouter / Local LLM | LLM inference |
+| Xiaomi mimo-v2-flash | Triage classification |
+| DeepSeek V3.2 | Character interaction |
 
 ### Frontend
 
@@ -36,17 +38,23 @@ An interactive historical experience featuring Piet Hein, a 17th-century Dutch a
 hybride-wereld-repo/
 ├── src/                    # Python backend
 │   ├── agents/
-│   │   └── chatbot.py      # Piet Hein agent definition
+│   │   ├── triage.py       # Triage & classification agent
+│   │   └── ...
+│   ├── personas/           # Historical character definitions
+│   │   ├── base.py         # Persona loading logic
+│   │   ├── piet_hein/      # Piet Hein config & prompts
+│   │   └── witte_de_with/  # Witte de With config & prompts
 │   ├── core/
 │   │   └── llm.py          # LLM provider factory
 │   └── web/
-│       └── ag_ui_server.py # AG-UI ASGI server
+│       └── ag_ui_server.py # FastAPI server with AG-UI adapter
 ├── frontend/               # React frontend (Vite)
-│   └── src/
-│       ├── pages/          # Route-level page components
-│       ├── components/     # Reusable UI components
-│       └── router.tsx      # Application routes
-├── docs/                   # Project documentation
+│   ├── src/
+│   │   ├── pages/          # Route-level page components
+│   │   ├── components/     # Reusable UI components
+│   │   └── router.tsx      # Application routes
+│   └── ...
+├── docs/                   # Project documentation & justifications
 ├── .env.example            # Environment variable template
 ├── pyproject.toml          # Python project configuration
 └── run_dev.ps1             # Development startup script
@@ -84,8 +92,7 @@ Copy-Item .env.example .env
 |---|---|
 | `MODEL_PROVIDER` | `openrouter` or `local` |
 | `OPENROUTER_API_KEY` | Your [OpenRouter](https://openrouter.ai/) API key |
-| `OPENAI_API_KEY` | Your OpenAI API key (used for embeddings) |
-| `OPENAI_BASE_URL` | Base URL for local LLM (only when `MODEL_PROVIDER=local`) |
+| `OPENROUTER_MODEL` | Default model for persona interaction (e.g., `deepseek/deepseek-v3.2`) |
 
 ### 3. Run the development environment
 
