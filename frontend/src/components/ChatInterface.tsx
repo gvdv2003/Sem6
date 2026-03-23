@@ -1,26 +1,52 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import pietHeinPortrait from '../assets/characters/piet-hein-portrait.jpg';
-import zilvervlootBg from '../assets/backgrounds/zilvervloot.jpg';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-const SUGGESTED_PROMPTS = [
-  'Vertel me over de zilvervloot.',
-  'Kan u mij iets vertellen over uzelf?',
-  'Wat is uw mening over de Spanjaarden?',
-];
+interface PersonaData {
+  slug: string;
+  display_name: string;
+  description: string;
+  avatar: {
+    portrait: string;
+    background: string;
+  };
+  predefined_prompts: string[];
+}
 
-export const ChatInterface: React.FC = () => {
+interface ChatInterfaceProps {
+  personaSlug: string;
+}
+
+export const ChatInterface: React.FC<ChatInterfaceProps> = ({ personaSlug }) => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [persona, setPersona] = useState<PersonaData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fetch persona data on mount/slug change
+  useEffect(() => {
+    const fetchPersona = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/personas/${personaSlug}`);
+        if (!res.ok) throw new Error('Failed to load persona');
+        const data = await res.json();
+        setPersona(data);
+      } catch (err) {
+        console.error(err);
+        setError('Could not load persona character.');
+      }
+    };
+    void fetchPersona();
+  }, [personaSlug]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,7 +75,7 @@ export const ChatInterface: React.FC = () => {
     }));
 
     try {
-      const response = await fetch('http://localhost:8000/', {
+      const response = await fetch(`http://localhost:8000/${personaSlug}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,12 +157,51 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
+  if (error) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black text-white px-6 text-center">
+        <div className="max-w-md rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-2xl">
+          <div className="mb-4 text-sm font-medium text-white/90">Something went wrong</div>
+          <div className="text-xs leading-6 text-white/35">{error}</div>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-6 rounded-2xl bg-white px-5 py-2 text-xs font-medium text-black transition hover:bg-white/90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!persona) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black text-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 animate-pulse rounded-full border border-white/20 bg-white/5" />
+            <div className="absolute inset-0 animate-ping rounded-full border border-white/10" />
+          </div>
+          <div className="text-[10px] uppercase tracking-[0.2em] text-white/35">Loading Context</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Resolve asset paths relative to public or src paths (assuming Vite handles these imports if we use a trick, 
+  // but for dynamic we usually serve from public or import maps. Since they are in src/assets, we use dynamic import trick
+  // or just rely on Vite's asset handling if configured. 
+  // Assuming standard Vite setup, we'll try to load them via `/src/assets/...` url 
+  // Note: For production build, dynamic images from src/assets is tricky, but works in dev.
+  const portraitUrl = new URL(`../assets/characters/${persona.avatar.portrait}`, import.meta.url).href;
+  const bgUrl = new URL(`../assets/backgrounds/${persona.avatar.background}`, import.meta.url).href;
+
   return (
     <div className="fixed inset-0 overflow-hidden bg-black text-white">
       {/* Background */}
       <div className="absolute inset-0">
         <img
-          src={zilvervlootBg}
+          src={bgUrl}
           alt=""
           className="h-full w-full object-cover"
         />
@@ -154,8 +219,8 @@ export const ChatInterface: React.FC = () => {
                 <div className="absolute inset-0 rounded-[2rem] bg-white/10 blur-2xl" />
                 <div className="relative h-64 w-52 overflow-hidden rounded-[2rem] border border-white/15 bg-white/5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-md lg:h-80 lg:w-64">
                   <img
-                    src={pietHeinPortrait}
-                    alt="Piet Hein"
+                    src={portraitUrl}
+                    alt={persona.display_name}
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/5" />
@@ -165,11 +230,10 @@ export const ChatInterface: React.FC = () => {
               <div className="pb-4">
                 <div className="mb-5 h-px w-16 bg-white/20" />
                 <h1 className="text-4xl font-light tracking-[-0.04em] text-white lg:text-6xl">
-                  Piet Hein
+                  {persona.display_name}
                 </h1>
                 <p className="mt-4 max-w-md text-sm leading-7 text-white/55 lg:text-base">
-                  Piet Hein
-                  was een Nederlandse luitenant-admiraal die wereldberoemd werd door in 1628 de Spaanse Zilvervloot te veroveren in de Baai van Matanzas.
+                  {persona.description}
                 </p>
               </div>
             </div>
@@ -201,13 +265,13 @@ export const ChatInterface: React.FC = () => {
               </button>
               <div className="h-8 w-8 rounded-full border border-white/10 bg-white/5 p-0.5">
                 <img
-                  src={pietHeinPortrait}
-                  alt="Piet Hein"
+                  src={portraitUrl}
+                  alt={persona.display_name}
                   className="h-full w-full rounded-full object-cover"
                 />
               </div>
               <div>
-                <div className="text-sm font-medium text-white/85">Piet Hein</div>
+                <div className="text-sm font-medium text-white/85">{persona.display_name}</div>
                 <div className="text-[11px] text-white/35">Assistant</div>
               </div>
             </div>
@@ -220,8 +284,8 @@ export const ChatInterface: React.FC = () => {
                 <div className="rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-8 backdrop-blur-md">
                   <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
                     <img
-                      src={pietHeinPortrait}
-                      alt="Piet Hein"
+                      src={portraitUrl}
+                      alt={persona.display_name}
                       className="h-10 w-10 rounded-xl object-cover"
                     />
                   </div>
@@ -233,7 +297,7 @@ export const ChatInterface: React.FC = () => {
                   </div>
 
                   <div className="mt-6 flex flex-col gap-2">
-                    {SUGGESTED_PROMPTS.map((prompt) => (
+                    {persona.predefined_prompts.map((prompt) => (
                       <button
                         key={prompt}
                         type="button"
@@ -260,7 +324,7 @@ export const ChatInterface: React.FC = () => {
                       {!isUser && (
                         <div className="mr-2 mt-1 h-7 w-7 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/5">
                           <img
-                            src={pietHeinPortrait}
+                            src={portraitUrl}
                             alt="Assistant"
                             className="h-full w-full object-cover"
                           />
@@ -283,7 +347,7 @@ export const ChatInterface: React.FC = () => {
                   <div className="flex animate-[fadeIn_.2s_ease] justify-start">
                     <div className="mr-2 mt-1 h-7 w-7 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/5">
                       <img
-                        src={pietHeinPortrait}
+                        src={portraitUrl}
                         alt="Assistant"
                         className="h-full w-full object-cover"
                       />
@@ -315,7 +379,7 @@ export const ChatInterface: React.FC = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     rows={1}
-                    placeholder="Message Piet Hein..."
+                    placeholder={`Message ${persona.display_name}...`}
                     disabled={isLoading}
                     className="max-h-[140px] min-h-[24px] flex-1 resize-none bg-transparent px-3 py-2 text-sm leading-6 text-white/90 placeholder:text-white/25 focus:outline-none"
                   />

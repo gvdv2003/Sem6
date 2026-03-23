@@ -36,9 +36,18 @@ def get_model():
     if MODEL_PROVIDER == 'local':
         return 'openai:qwen/custom-assistant-model'
     elif MODEL_PROVIDER == 'openrouter':
-        # Default to a high-quality model if not specified, 
-        # but keep the user's requested gemini-3 if possible.
-        model_id = os.getenv('OPENROUTER_MODEL', 'google/gemini-2.0-flash-001')
+        model_id = os.getenv('OPENROUTER_MODEL', 'xiaomi/mimo-v2-flash')
         return _get_openrouter_model(model_id)
+    else:
+        raise ValueError(f"Invalid MODEL_PROVIDER: {MODEL_PROVIDER}. Must be 'openrouter' or 'local'")
+
+def get_triage_model():
+    """
+    Returns a cheap and fast model for triage classification.
+    """
+    if MODEL_PROVIDER == 'local':
+        return 'openai:qwen/custom-assistant-model'
+    elif MODEL_PROVIDER == 'openrouter':
+        return _get_openrouter_model('xiaomi/mimo-v2-flash')
     else:
         raise ValueError(f"Invalid MODEL_PROVIDER: {MODEL_PROVIDER}. Must be 'openrouter' or 'local'")

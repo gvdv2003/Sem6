@@ -2,5 +2,5 @@ import React from 'react';
 import { ChatInterface } from '../components/ChatInterface';
 
 export const PietHeinPage: React.FC = () => {
-  return <ChatInterface />;
+  return <ChatInterface personaSlug="piet_hein" />;
 };
