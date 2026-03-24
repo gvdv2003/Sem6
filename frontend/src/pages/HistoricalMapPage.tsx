@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CharacterMapBubble } from '../components/map/CharacterMapBubble';
 import pietHeinPortrait from '../assets/characters/piet-hein-portrait.jpg';
+import witteDeWithPortrait from '../assets/characters/witte-de-with-portrait.jpg';
 import stadskaartRotterdam from '../assets/backgrounds/stadskaart-rotterdam-16e-eeuw.jpg';
 
 export const HistoricalMapPage: React.FC = () => {
@@ -29,7 +30,7 @@ export const HistoricalMapPage: React.FC = () => {
               Historisch Rotterdam
             </h1>
             <p className="text-xs text-white/40">
-              Verken personages op de kaart
+              Verken personages op de kaart.
             </p>
           </div>
         </header>
@@ -41,7 +42,7 @@ export const HistoricalMapPage: React.FC = () => {
               Kaartoverzicht
             </div>
             <p className="mt-2 text-sm leading-6 text-white/55">
-              Klik op Piet Hein om direct naar zijn gesprekspagina te gaan.
+              Klik op een personage om meer te weten te komen.
             </p>
           </div>
 
@@ -53,6 +54,17 @@ export const HistoricalMapPage: React.FC = () => {
             style={{
               left: '58%',
               top: '46%',
+            }}
+          />
+
+          {/* Witte de With bubble */}
+          <CharacterMapBubble
+            name="Witte de With"
+            image={witteDeWithPortrait}
+            onClick={() => navigate('/characters/witte-de-with')}
+            style={{
+              left: '25%',
+              top: '33%',
             }}
           />
         </main>

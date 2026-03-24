@@ -28,7 +28,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ personaSlug }) => 
   const [isLoading, setIsLoading] = useState(false);
   const [persona, setPersona] = useState<PersonaData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -163,7 +163,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ personaSlug }) => 
         <div className="max-w-md rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-2xl">
           <div className="mb-4 text-sm font-medium text-white/90">Something went wrong</div>
           <div className="text-xs leading-6 text-white/35">{error}</div>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="mt-6 rounded-2xl bg-white px-5 py-2 text-xs font-medium text-black transition hover:bg-white/90"
           >
@@ -272,7 +272,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ personaSlug }) => 
               </div>
               <div>
                 <div className="text-sm font-medium text-white/85">{persona.display_name}</div>
-                <div className="text-[11px] text-white/35">Assistant</div>
+                <div className="text-[11px] text-white/35">AI-reconstructie</div>
               </div>
             </div>
           </div>
